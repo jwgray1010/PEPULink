@@ -1,0 +1,138 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, #root {
+  overflow-x: hidden;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f6f5ef;
+  color: #23272f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button, .main-btn, .pay-btn {
+  background: #22543d;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.15em;
+  font-weight: 600;
+  padding: 1em 0;
+  width: 100%;
+  box-shadow: 0 2px 8px #0001;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover, .main-btn:hover, .pay-btn:hover {
+  background: #1a4734;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #ffd70055;
+}
+
+img,
+svg {
+  -webkit-user-drag: none;
+}
+
+.logo,
+.logo-home,
+img[aria-label="Go to Dashboard"] {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: filter 0.2s;
+}
+.logo {
+  height: 6em;
+  padding: 0; /* or adjust as needed */
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:focus,
+.logo-home:focus,
+img[aria-label="Go to Dashboard"]:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  filter: brightness(1.2);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.card, .main-container, .qr-section {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0001;
+  padding: 2em;
+  margin: 2em auto;
+  max-width: 420px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  body {
+    background: #ffffff;
+    color: #213547;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #23272f;
+    color: #f6f5ef;
+  }
+}
