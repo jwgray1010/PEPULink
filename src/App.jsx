@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import CardScreen from "./components/CardScreen";
 import Layout from "./components/Layout";
 import HomeScreen from "./components/HomeScreen";
+import TxHistory from "./components/TxHistory";
 import { TourProvider } from '@reactour/tour';
 import './styles/theme.css';
 
@@ -26,14 +27,14 @@ function App() {
       <Routes>
         <Route
           element={
-            <Layout setSigner={setSigner} openPepuModal={openPepuModal} />
-          }
+            <Layout setSigner={setSigner} signer={signer} />            }
         >
           <Route
             path="/"
             element={
               <HomeScreen
-                walletAddress={"0x1234...abcd"}
+                signer={signer}
+                walletAddress={signer ? (signer.getAddress ? signer.getAddress() : "0x...") : "0x..."}
                 onWalletConnect={() => {}}
                 onCopy={(addr) => navigator.clipboard.writeText(addr)}
                 onScan={() => {/* open QR scanner */}}
@@ -42,7 +43,8 @@ function App() {
               />
             }
           />
-          <Route path="/card" element={<CardScreen />} />
+          <Route path="/card" element={<CardScreen signer={signer} />} />
+          <Route path="/tx" element={<TxHistory signer={signer} />} />
           {/* Add more routes here as needed */}
         </Route>
       </Routes>
@@ -78,4 +80,8 @@ export default function AppWithRouter() {
       <App />
     </Router>
   );
+}
+
+if (!signer) {
+  // Show demo card or a message
 }

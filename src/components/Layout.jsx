@@ -13,11 +13,6 @@ import rewardsIcon from "../assets/rewards.svg";
 import SmartSpendingAIChat from "./SmartSpendingAIChat.jsx";
 import ailogo from "../assets/ailogo.svg";
 
-function toggleTheme() {
-  const current = document.body.getAttribute('data-theme');
-  document.body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
-}
-
 export default function Layout({ setSigner, signer, txHistory }) {
   const [aiModal, setAiModal] = useState(false);
   return (
@@ -38,20 +33,20 @@ export default function Layout({ setSigner, signer, txHistory }) {
         style={{
           width: '100%',
           background: 'transparent', // <-- No green background
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 0,
-          margin: 0,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
-          minHeight: 0,
-          height: 'auto',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 0, margin: 0 }}>
-          <WalletConnectButton setSigner={setSigner} />
-          <img
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 0,
+            margin: 0,
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
+            minHeight: 0,
+            height: 'auto',
+            }}
+            >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 0, margin: 0, marginTop: 28 }}>
+            <WalletConnectButton setSigner={setSigner} style={{ position: 'relative', top: '-4px' }} />
+            <img
             src={copyIcon}
             alt="Copy"
             style={{
@@ -60,50 +55,44 @@ export default function Layout({ setSigner, signer, txHistory }) {
               cursor: 'pointer',
               marginLeft: 4,
               verticalAlign: 'middle',
+              horizontalAlign: 'center',
             }}
             onClick={() => navigator.clipboard.writeText(window.location.href)}
             title="Copy page URL"
-          />
-        </div>
-      </header>
-      <main
-        className="main-content"
-        style={{
-          width: '100%',
-          padding: 0,
-          margin: 0,
-          background: 'none',
-          boxShadow: 'none',
-          borderRadius: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'stretch',
-          flex: 1,
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 18,
-            boxShadow: "0 4px 24px #0001",
-            padding: "2em",
-            margin: "2em auto 100px auto", // add bottom margin for nav
-            maxWidth: 420,
-            width: "100%",
-            minHeight: "60vh", // ensures card is tall enough
-          }}
-        >
-          <Outlet />
-        </div>
-      </main>
-      <footer className="footer" style={{ marginBottom: 80 }}>
-        <hr className="footer-divider" />
-        <p>
-          Powered by PepeUnchained • PEPULink &copy; {new Date().getFullYear()}
-        </p>
-      </footer>
-
-      {/* Bottom Navigation Bar */}
+            />
+            </div>
+            </header>
+            <main
+            className="main-content"
+            style={{
+              width: '100vw',
+              minHeight: '100vh',
+              padding: 0,
+              margin: 0,
+              background: 'none',
+              boxShadow: 'none',
+              borderRadius: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'stretch',
+              flex: 1,
+            }}
+          >
+            <div
+            style={{
+              background: "none",
+              borderRadius: 0,
+              boxShadow: "none",
+              padding: "0",
+              margin: "0",
+              width: "100vw",
+              minHeight: "100vh",
+            }}
+          >
+            <Outlet />
+          </div>
+          </main>
+          {/* Bottom Navigation Bar */}
       <nav
         style={{
           width: '100%',
@@ -142,26 +131,6 @@ export default function Layout({ setSigner, signer, txHistory }) {
           <img src={rewardsIcon} alt="Rewards" style={{ width: 32, height: 32 }} />
         </Link>
       </nav>
-      <button
-        onClick={toggleTheme}
-        style={{
-          position: 'fixed',
-          top: 16,
-          right: 16,
-          zIndex: 2000,
-          background: '#fff',
-          color: '#22543d',
-          border: '1px solid #ddd',
-          borderRadius: 16,
-          padding: '0.5em 1em',
-          fontWeight: 600,
-          boxShadow: '0 2px 8px #0001',
-          cursor: 'pointer',
-        }}
-      >
-        🌓
-      </button>
-
       {/* Floating AI Button */}
       <div
         onClick={() => setAiModal(true)}

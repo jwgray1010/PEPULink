@@ -1,8 +1,0 @@
-.card, .main-container, .qr-section {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px #0001;
-  padding: 2em;
-  margin: 2em auto;
-  max-width: 420px;
-}

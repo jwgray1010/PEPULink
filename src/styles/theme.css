@@ -1,11 +1,16 @@
-:root {
-  --bg: #1e2329;
-  --card: #2e8b57;
+html, body {
+  overflow-x: hidden;
+}:root {
+  --card: transparent;
   --text: #fff;
-  --accent: #ffd700;
+  --accent: #2e8b57;
   --error: #ffb347;
   --success: #b6ffb6;
   --danger: #ff4d4f;
+  --background: #f9f9f9;
+  --primary: #2e8b57; /* Use your nav button green here */
+  --text-secondary: #555;
+  --button-radius: 12px;
 }
 [data-theme="light"] {
   --bg: #f9f9f9;
@@ -35,12 +40,6 @@ body::-webkit-scrollbar {
 body::-webkit-scrollbar-thumb {
   background: var(--accent);
   border-radius: 8px;
-}
-.pepe-theme {
-  background: #1e2329; /* Remove the gradient if you want a solid background */
-  min-height: 100vh;
-  color: #fff;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 .logo {
   width: 80px;
@@ -82,14 +81,13 @@ input, select {
   width: 100%;
 }
 .history-screen {
-  background: #23272f;
-  border-radius: 18px;
-  padding: 2em 1.5em;
-  margin: 2em auto;
-  max-width: 400px;
-  box-shadow: 0 4px 24px #0003;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  box-shadow: none;
   color: #fff;
-  transition: box-shadow 0.2s;
 }
 .history-screen .loading,
 .history-screen .error {
@@ -126,7 +124,7 @@ input, select {
   padding: 0.7em 1em;
   border-radius: 8px;
   border: 1.5px solid #2e8b57;
-  background: #23272f;
+  background: transparent;
   color: #fff;
   font-size: 1em;
   transition: border 0.2s;
@@ -204,7 +202,7 @@ input, select {
   letter-spacing: 0.5px;
 }
 .tx-history {
-  background: #23272f;
+  background: transparent;
   border-radius: 18px;
   padding: 2em 1.5em;
   margin: 2em auto;
@@ -220,7 +218,7 @@ input, select {
 }
 /* CardScreen styles */
 .card-screen {
-  background: #23272f; /* Or any dark/neutral color you prefer */
+  background: transparent; /* Or any dark/neutral color you prefer */
   border-radius: 18px;
   padding: 2em 1.5em;
   margin: 2em auto;
@@ -259,13 +257,13 @@ input, select {
   padding: 24px;
   box-shadow: 0 2px 8px #0002;
   color: #fff;
-  background: #2e8b57;
+  background: transparent;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .card-back {
-  background: #23272f;
+  background:transparent;
   transform: rotateY(180deg);
   color: #fff;
 }
@@ -304,8 +302,10 @@ input, select {
   margin-top: 8px;
 }
 .card-balance {
-  font-size: 1.3em;
-  margin: 0.5em 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 1rem;
 }
 .balance-amount {
   transition: color 0.3s, font-size 0.3s;
@@ -329,7 +329,7 @@ input, select {
   to { opacity: 1; transform: translateY(-4px);}
 }
 .cvv-label {
-  margin-top: 32px;
+  margin-top: 40px;
   font-size: 1.2em;
 }
 .wallet-connect {
@@ -338,10 +338,10 @@ input, select {
 .wallet-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
   background: transparent; /* Change from #2e8b57 to transparent */
   border-radius: 8px;
-  padding: 0.5em 1em;
+  padding: 1em 1em;
 }
 .wallet-address {
   font-weight: bold;
@@ -365,14 +365,19 @@ input, select {
   background: #1e2329;
 }
 .qr-scanner {
-  background: var(--card);
-  border-radius: 18px;
-  padding: 2em 1.5em;
-  margin: 2em auto;
-  max-width: 400px;
-  box-shadow: 0 4px 24px #0003;
-  color: var(--text);
-  transition: box-shadow 0.2s;
+  background: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
 }
 .qr-scanner h2 {
   margin-bottom: 1em;
@@ -434,7 +439,7 @@ input, select {
   z-index: 1000;
 }
 .modal {
-  background: #23272f;
+  background: transparent;
   color: #fff;
   border-radius: 12px;
   padding: 2em 2em 1em 2em;
@@ -450,7 +455,7 @@ input[aria-label="Top up amount"] {
   font-size: 1em;
 }
 .main-content {
-  min-height: 80vh;
+  min-height: 100
 }
 .footer {
   margin-top: 2em;
@@ -581,15 +586,6 @@ html {
   height: 1px;
   overflow: hidden;
 }
-.topup-progress-bar-container {
-  width: 100%;
-  background: #23272f;
-  border-radius: 6px;
-  height: 8px;
-  margin: 1em 0 0.5em 0;
-  overflow: hidden;
-  box-shadow: 0 1px 4px #0002;
-}
 .topup-progress-bar {
   height: 100%;
   background: linear-gradient(90deg, #ffd700 0%, #2e8b57 100%);
@@ -655,7 +651,7 @@ html {
   position: absolute;
   left: 50%; top: -2em;
   transform: translateX(-50%);
-  background: #23272f;
+  background: transparent;
   color: #ffd700;
   padding: 0.3em 0.7em;
   border-radius: 6px;
@@ -670,7 +666,7 @@ html {
   position: absolute;
   left: 50%; top: -2em;
   transform: translateX(-50%);
-  background: #23272f;
+  background: transparent;
   color: #ffd700;
   padding: 0.3em 0.7em;
   border-radius: 6px;
@@ -730,7 +726,7 @@ img[src$=".svg"], .svg-icon, .main-nav img[src$=".svg"], .bottom-nav img[src$=".
 
 /* Remove duplicate .modal selector if present */
 .modal {
-  background: #23272f;
+  background: transparent;
   color: #fff;
   border-radius: 12px;
   padding: 2em 2em 1em 2em;
@@ -799,7 +795,87 @@ header {
   filter: drop-shadow(0 2px 6px #0003);
   z-index: -1;
 }
-.your-container-class {
-  background: #f6f5ef;
-  color: #23272f;
+
+.home-heading {
+  color: var(--text);
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
 }
+
+.home-subheading {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.home-button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--button-radius);
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: background 0.2s;
+}
+
+.card-info {
+  color: transparent;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.card-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.keypad-btn {
+  background: #222;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.keypad-btn:hover {
+  background: var(--accent);
+  color: #222;
+}
+
+.card-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.action-btn {
+  background: var(--accent);
+  color: #222;
+  border: none;
+  border-radius: var(--button-radius);
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: background 0.2s;
+}
+
+.action-btn:hover {
+  background: #fff176;
+}
+
+/* Removed invalid JSX/HTML code block that was mistakenly placed in CSS file */

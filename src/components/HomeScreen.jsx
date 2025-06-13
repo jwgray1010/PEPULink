@@ -1,19 +1,92 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers, Wallet } from "ethers";
 import { useNavigate } from "react-router-dom";
-import "../styles/theme.css";
-import QRScanner from './QRScanner.jsx';
-import qrIcon from '../assets/qr.svg'; // Make sure you have a QR icon SVG in your assets
-// eslint-disable-next-line
-import ailogo from '../assets/ailogo.svg'; // AI logo for future use
+import logo from "../assets/logo.png";
+import qrIcon from "../assets/qr.svg";
+import requestIcon from "../assets/request.svg";
+import loadIcon from "../assets/load.svg";
+import payIcon from "../assets/money.svg";
 
-export default function HomeScreen({ openModal, signer, ...props }) {
+const demoAddress = "0x1234..abcd";
+const demoCard = {
+  number: "Card 1234",
+  balance: 125.0,
+};
+const demoActivities = [
+  {
+    icon: "🏪",
+    title: "BURGER PALACE",
+    time: "Just now",
+    amount: "- $8.50",
+    color: "#ff4d4f",
+  },
+  {
+    icon: "🏦",
+    title: "BANK",
+    time: "Just now",
+    amount: "+ 125000",
+    color: "#00e676",
+  },
+  {
+    icon: "☕️",
+    title: "COFFEE SHOP",
+    time: "Today",
+    amount: "- $4.50",
+    color: "#ff4d4f",
+  },
+  {
+    icon: "🛒",
+    title: "GROCERY",
+    time: "Yesterday",
+    amount: "- $32.10",
+    color: "#ff4d4f",
+  },
+  {
+    icon: "💸",
+    title: "REQUEST FROM ALICE",
+    time: "1 min ago",
+    amount: "+ $50.00",
+    color: "#00e676",
+  },
+  {
+    icon: "💳",
+    title: "CARD LOAD",
+    time: "Today",
+    amount: "+ $100.00",
+    color: "#00e676",
+  },
+  {
+    icon: "🍔",
+    title: "FAST FOOD",
+    time: "Yesterday",
+    amount: "- $12.00",
+    color: "#ff4d4f",
+  },
+  {
+    icon: "🏥",
+    title: "INSURANCE",
+    time: "2 days ago",
+    amount: "- $75.00",
+    color: "#ff4d4f",
+  },
+  {
+    icon: "🎁",
+    title: "GIFT RECEIVED",
+    time: "3 days ago",
+    amount: "+ $20.00",
+    color: "#00e676",
+  },
+];
+const keypad = [
+  ["1", "2", "3"],
+  ["4", "5", "6"],
+  ["7", "8", "9"],
+  [".", "0", "<"]
+];
+
+function HomeScreen({ openModal, signer, onScan, onRequest, onPay, onLoad, ...props }) {
   const {
     walletAddress = "0x1234...abcd",
-    onWalletConnect,
-    onCopy,
-    onScan,
-    onRequest,
     merchantAddress
   } = props;
 
@@ -21,13 +94,11 @@ export default function HomeScreen({ openModal, signer, ...props }) {
   const [balance, setBalance] = useState(0);
   const [paying, setPaying] = useState(false);
   const [payStatus, setPayStatus] = useState("");
-  const [showQRScanner, setShowQRScanner] = useState(false);
-  const [autoTopUp, setAutoTopUp] = useState(50); // Default $50
   const [showReceipt, setShowReceipt] = useState(null);
-  const [recurringAmount, setRecurringAmount] = useState(10);
-  const [recurringInterval, setRecurringInterval] = useState("monthly");
   const [guestWallet, setGuestWallet] = useState(null);
   const [showPepuModal, setShowPepuModal] = useState(false);
+  const [keypadMode, setKeypadMode] = useState(null); // "pay" | "request" | "load" | null
+  const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,11 +108,7 @@ export default function HomeScreen({ openModal, signer, ...props }) {
         return;
       }
       try {
-        // Replace with your contract/balance logic as needed
         const address = await signer.getAddress();
-        // Example: get balance from contract or provider
-        // const bal = await contract.balanceOf(address);
-        // setBalance(Number(ethers.formatUnits(bal, 18)));
         setBalance(1234.56); // Demo
       } catch {
         setBalance(0);
@@ -49,15 +116,6 @@ export default function HomeScreen({ openModal, signer, ...props }) {
     }
     fetchBalance();
   }, [signer]);
-
-  useEffect(() => {
-    if (balance < autoTopUp) {
-      // Call your top-up function here
-      // Example: triggerTopUp(autoTopUp - balance);
-      // TODO: Implement actual swap or top-up logic here
-    }
-    // eslint-disable-next-line
-  }, [balance, autoTopUp]);
 
   const handleKey = (val) => {
     let next = amount;
@@ -68,7 +126,6 @@ export default function HomeScreen({ openModal, signer, ...props }) {
       next = amount === "0" && val !== "." ? val : amount + val;
     }
     if (next.startsWith("0") && !next.startsWith("0.")) next = next.replace(/^0+/, "");
-    if (Number(next) > balance) return;
     setAmount(next);
   };
 
@@ -91,386 +148,376 @@ export default function HomeScreen({ openModal, signer, ...props }) {
       setPayStatus("Payment successful!");
       setShowReceipt({
         amount: amount,
-        pepu: (amount / pepuUsdRate).toFixed(2), // adjust as needed
-        meme: "/memes/pepe-dance.gif", // path to your meme/gif
+        pepu: (amount / 1).toFixed(2), // adjust as needed
+        meme: "/memes/pepe-dance.gif",
         txHash: tx.hash
       });
-      // Optionally, refresh balance
-      // const address = await signer.getAddress();
-      // const bal = await contract.balanceOf(address);
-      // setBalance(Number(ethers.formatUnits(bal, 18)));
     } catch (err) {
       setPayStatus("Payment failed: " + (err.reason || err.message));
     }
     setPaying(false);
   };
 
-  const triggerTopUp = async (amountNeeded) => {
-    // Example: Call your contract or backend to swap PEPU for fiat
-    // await contract.swapPEPUForFiat(amountNeeded);
-    setPayStatus(`Auto-Top-Up: Swapped PEPU for $${amountNeeded.toFixed(2)}`);
-  };
-
   const createGuestWallet = () => {
     const tempWallet = Wallet.createRandom();
     setGuestWallet(tempWallet);
-    // Use tempWallet.address for payment
   };
 
-  const keypad = [
-    ["1", "2", "3"],
-    ["4", "5", "6"],
-    ["7", "8", "9"],
-    [".", "0", "<"]
-  ];
+  function handleKeypadClick(key) {
+    if (key === "<") {
+      setInputValue((v) => v.slice(0, -1));
+    } else if (key === ".") {
+      if (!inputValue.includes(".")) setInputValue((v) => v + ".");
+    } else {
+      setInputValue((v) => (v === "0" ? key : v + key));
+    }
+  }
+
+  function closeKeypad() {
+    setKeypadMode(null);
+    setInputValue("");
+  }
+
+  const isPayMode = keypadMode === "pay";
+  const isRequestMode = keypadMode === "request";
+  const isLoadMode = keypadMode === "load";
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        width: "100%",
-        background: "#f6f5ef",
+        background: "linear-gradient(180deg, #2e8b57 0%, #f6f5ef 120%)",
+        fontFamily: "system-ui, sans-serif",
         color: "#23272f",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: "inherit",
         margin: 0,
         padding: 0,
+        overflowY: "auto", // allow scrolling
       }}
     >
-      <main
-        className="main-content"
+      {/* Half-circle dark green header */}
+      <div
         style={{
-          width: '100%',
-          padding: 0,
-          margin: 0,
-          background: 'none',
-          boxShadow: 'none',
-          borderRadius: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'stretch',
-          flex: 1,
+          width: "100vw",
+          height: 220,
+          background: "#174c31",
+          borderBottomLeftRadius: "100vw",
+          borderBottomRightRadius: "100vw",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
         }}
       >
         <div
           style={{
-            background: "#fff",
-            borderRadius: 18,
-            boxShadow: "0 4px 24px #0001",
-            padding: "2em",
-            margin: "2em auto 100px auto",
-            maxWidth: 420,
             width: "100%",
-            minHeight: "60vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            marginTop: 40,
+            marginBottom: 0,
           }}
         >
-          {/* Balance */}
-          <div style={{ textAlign: "center", margin: "32px 0 0 0" }}>
-            <div style={{ fontSize: "5em", fontWeight: 700, color: "#6aff6a" }}>
-              ${amount}
+          {/* Logo to the left */}
+          <img
+            src={logo}
+            alt="PEPU Logo"
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: "50%",
+              marginRight: 18,
+              boxShadow: "0 2px 8px #0003",
+              position: "relative",
+              left: 0,
+            }}
+          />
+          {/* Centered, bigger Title */}
+          <span
+            style={{
+              fontWeight: 900,
+              fontSize: 56,
+              color: "#fff",
+              letterSpacing: 1,
+              textAlign: "center",
+              flex: "0 1 auto",
+              lineHeight: 1.1,
+            }}
+          >
+            PEPULink
+          </span>
+        </div>
+      </div>
+
+      {/* Slightly smaller Card, still overlapping the half-circle */}
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 22,
+          boxShadow: "0 8px 32px #0002",
+          margin: "0 auto",
+          marginTop: -80,
+          padding: "12px 12px",
+          maxWidth: 340,
+          width: "90vw",
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "stretch",
+        }}
+      >
+        <div style={{ color: "#888", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>
+          {demoAddress}
+        </div>
+        <div
+          style={{
+            background: "#2e8b57",
+            borderRadius: 20,
+            padding: "40px 14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <div style={{ color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 6 }}>
+              {demoCard.number}
             </div>
-            {/* Swap the order below */}
-            <div style={{ color: "#ffd700", fontSize: "1.2em", marginTop: 8 }}>
-              USD Balance: <b>{balance}</b>
-            </div>
-            <div style={{ color: "#ffd700", fontSize: "1.2em", marginTop: 8 }}>
-              PEPU Balance: <b>{/* insert PEPU balance variable here, e.g. pepuBalance */}</b>
+            <div style={{ color: "#fff", fontWeight: 900, fontSize: 24 }}>
+              ${demoCard.balance.toFixed(2)}
             </div>
           </div>
+          <img
+            src={logo}
+            alt="Coin"
+            style={{ width: 70, height: 70, borderRadius: "50%" }}
+          />
+        </div>
+      </div>
 
-          {/* Keypad */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 0 32px 0" }}>
+      {/* Action Buttons */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 32,
+          margin: "40px auto 0 auto",
+          maxWidth: 600,
+        }}
+      >
+        <ActionButton icon={qrIcon} label="Scan" onClick={() => navigate("/qr")} />
+        <ActionButton icon={requestIcon} label="Request" onClick={() => setKeypadMode("request")} />
+        <ActionButton icon={loadIcon} label="Load Card" onClick={() => setKeypadMode("load")} />
+        <ActionButton icon={payIcon} label="Pay" onClick={() => setKeypadMode("pay")} />
+      </div>
+
+      {/* Dropdown Keypad */}
+      {keypadMode && (
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 18,
+            boxShadow: "0 2px 12px #0002",
+            margin: "18px auto 0 auto",
+            padding: "18px 12px 12px 12px",
+            maxWidth: 340,
+            width: "90vw",
+            textAlign: "center",
+            zIndex: 3,
+            transition: "all 0.2s",
+          }}
+        >
+          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 10 }}>
+            {isPayMode && "Enter Amount to Pay"}
+            {isRequestMode && "Enter Amount to Request"}
+            {isLoadMode && "Enter Amount to Load"}
+          </div>
+          <div
+            style={{
+              fontSize: 32,
+              fontWeight: 700,
+              marginBottom: 12,
+              border: "1px solid #2e8b57",
+              borderRadius: 8,
+              padding: "8px 0",
+              background: "#f6f5ef",
+              letterSpacing: 2,
+            }}
+          >
+            {inputValue || "0"}
+          </div>
+          <div>
             {keypad.map((row, i) => (
-              <div key={i} style={{ display: "flex", gap: 64, margin: "18px 0" }}>
+              <div key={i} style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
                 {row.map((key) => (
                   <button
                     key={key}
-                    onClick={() => handleKey(key)}
+                    onClick={() => handleKeypadClick(key)}
                     style={{
-                      background: "none",
-                      border: "none",
-                      color: "#6aff6a",
-                      fontSize: "2.6em",
-                      width: 80,
-                      height: 80,
+                      width: 56,
+                      height: 56,
+                      margin: "0 6px",
                       borderRadius: "50%",
+                      border: "none",
+                      background: "#2e8b57",
+                      color: "#fff",
+                      fontSize: 24,
+                      fontWeight: 700,
                       cursor: "pointer",
-                      transition: "background 0.2s"
+                      boxShadow: "0 1px 4px #0001",
+                      outline: "none",
+                      transition: "background 0.15s",
                     }}
-                    disabled={
-                      key !== "<" &&
-                      key !== "." &&
-                      Number(
-                        amount === "0" && key !== "." ? key : amount + key
-                      ) > balance
-                    }
                   >
-                    {key === "<" ? <span>&larr;</span> : key}
+                    {key === "<" ? "⌫" : key}
                   </button>
                 ))}
               </div>
             ))}
           </div>
-
-          {/* Load Card / Pay Buttons */}
-          <div
+          <button
+            onClick={closeKeypad}
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 24,
-              margin: "0 0 32px 0",
-              padding: "0 24px",
+              marginTop: 10,
+              padding: "8px 18px",
+              borderRadius: 8,
+              background: "#2e8b57",
+              color: "#fff",
+              border: "none",
+              fontWeight: 600,
+              fontSize: 16,
+              cursor: "pointer",
             }}
           >
-            <button
-              onClick={onRequest}
-              style={{
-                flex: 1,
-                background: "#181c20",
-                color: "#6aff6a",
-                border: "none",
-                borderRadius: 40,
-                padding: "22px 0",
-                fontSize: "2em",
-                fontWeight: 600,
-                marginRight: 8,
-                boxShadow: "0 2px 8px #0002",
-                transition: "background 0.2s",
-                letterSpacing: 0.5,
-              }}
-            >
-              Load Card
-            </button>
-            <button
-              onClick={handlePay}
-              disabled={paying || Number(amount) <= 0 || Number(amount) > balance}
-              style={{
-                flex: 1,
-                background: paying ? "#333" : "#181c20",
-                color: "#6aff6a",
-                border: "none",
-                borderRadius: 40,
-                padding: "22px 0",
-                fontSize: "2em",
-                fontWeight: 600,
-                marginLeft: 8,
-                boxShadow: "0 2px 8px #0002",
-                transition: "background 0.2s",
-                letterSpacing: 0.5,
-                opacity: paying ? 0.7 : 1,
-                cursor: paying ? "not-allowed" : "pointer"
-              }}
-            >
-              {paying ? "Paying..." : "Pay"}
-            </button>
-          </div>
-          {payStatus && (
-            <div style={{
-              textAlign: "center",
-              color: payStatus.includes("success") ? "#6aff6a" : "#ffd700",
-              marginBottom: 16
-            }}>
-              {payStatus}
-            </div>
-          )}
-          {/* QR Scanner Modal */}
-          {showQRScanner && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                background: "rgba(0,0,0,0.85)",
-                zIndex: 1000,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <div style={{ position: "relative", background: "#181c20", borderRadius: 16, padding: 24 }}>
-                <button
-                  onClick={() => setShowQRScanner(false)}
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    background: "none",
-                    border: "none",
-                    color: "#fff",
-                    fontSize: 28,
-                    cursor: "pointer"
-                  }}
-                  aria-label="Close QR Scanner"
-                >
-                  ×
-                </button>
-                <QRScanner
-                  onScan={(data) => {
-                    setShowQRScanner(false);
-                    if (onScan) onScan(data);
-                  }}
-                  onError={() => setShowQRScanner(false)}
-                />
-              </div>
-            </div>
-          )}
-          {/* Receipt Modal - New Feature */}
-          {showReceipt && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                background: "rgba(0,0,0,0.85)",
-                zIndex: 2000,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <div style={{
-                background: "#23272f",
-                borderRadius: 16,
-                padding: 32,
-                textAlign: "center",
-                color: "#fff",
-                minWidth: 320
-              }}>
-                <img src={showReceipt.meme} alt="Meme" style={{ width: 120, marginBottom: 16 }} />
-                <h2> Payment Successful!</h2>
-                <p>
-                  <b>${showReceipt.amount}</b> spent<br />
-                  (<b>{showReceipt.pepu} PEPU</b>)
-                </p>
-                <button
-                  style={{
-                    margin: "16px 0 0 0",
-                    background: "#ffd700",
-                    color: "#23272f",
-                    border: "none",
-                    borderRadius: 8,
-                    padding: "10px 24px",
-                    fontWeight: 700,
-                    cursor: "pointer"
-                  }}
-                  onClick={() => {
-                    // Example: share to Twitter
-                    window.open(
-                      `https://twitter.com/intent/tweet?text=I%20just%20paid%20with%20PEPU%20on%20PEPULink!%20%23pepu%20%23web3`,
-                      "_blank"
-                    );
-                  }}
-                >
-                Share on Twitter
-                </button>
-                <br />
-                <button
-                  style={{
-                    margin: "16px 0 0 0",
-                    background: "none",
-                    color: "#fff",
-                    border: "1px solid #fff",
-                    borderRadius: 8,
-                    padding: "8px 24px",
-                    cursor: "pointer"
-                  }}
-                  onClick={() => setShowReceipt(null)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-          {/* Recurring Payment / Guest Checkout Buttons */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 24,
-              margin: "0 0 24px 0",
-              padding: "0 24px",
-            }}
-          >
-            <button
-              onClick={() => setShowRecurringModal(true)}
-              style={{
-                flex: 1,
-                background: "#181c20",
-                color: "#6aff6a", // Green text
-                border: "none",
-                borderRadius: 20,
-                padding: "12px 0",
-                fontSize: "1.2em",
-                fontWeight: 400,
-                marginRight: 5,
-                boxShadow: "0 2px 8px #0002",
-                transition: "background 0.2s",
-                letterSpacing: 0.5,
-                cursor: "pointer"
-              }}
-            >
-            Recurring Payment
-            </button>
-            <button
-              onClick={createGuestWallet}
-              style={{
-                flex: 1,
-                background: "#181c20",
-                color: "#6aff6a",
-                border: "none",
-                borderRadius: 20,
-                padding: "12px 0",
-                fontSize: "1.2em",
-                fontWeight: 400,
-                marginLeft: 5,
-                boxShadow: "0 2px 8px #0002",
-                transition: "background 0.2s",
-                letterSpacing: 0.5,
-                cursor: "pointer"
-              }}
-            >
-            Guest Checkout
-            </button>
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: 24,
-              right: 24,
-              zIndex: 10,
-            }}
-          >
-            <button
-              onClick={() => setShowQRScanner(true)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-              }}
-              aria-label="Scan QR"
-            >
-              <img src={qrIcon} alt="Scan QR" style={{ width: 40, height: 40 }} />
-            </button>
-          </div>
-          {showPepuModal && (
-            <Modal title="What is PEPU?" onClose={() => setShowPepuModal(false)}>
-              <p>PEPU is your open, borderless digital wallet...</p>
-            </Modal>
-          )}
+            Close
+          </button>
         </div>
-      </main>
-      <footer className="footer" style={{ marginBottom: 80 }}>
-        <hr className="footer-divider" />
-        <p>
-          Powered by PepeUnchained • PEPULink &copy; {new Date().getFullYear()}
-        </p>
-      </footer>
+      )}
+
+      {/* Recent Activity */}
+      <div
+        style={{
+          background: "#174c31",
+          borderRadius: 28,
+          boxShadow: "0 4px 16px #0002",
+          margin: "40px auto 0 auto",
+          maxWidth: 400,
+          width: "90vw",
+          padding: "28px 18px 18px 18px",
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 900,
+            fontSize: 28,
+            marginBottom: 18,
+            color: "#fff",
+            textAlign: "center",
+            letterSpacing: 1,
+          }}
+        >
+          Recent Activity
+        </div>
+        <div>
+          {demoActivities.map((a, i) => (
+            <div
+              key={i}
+              style={{
+                background: "#fff",
+                borderRadius: 14,
+                boxShadow: "0 2px 8px #0001",
+                padding: "14px 16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span
+                  style={{
+                    fontSize: 26,
+                    background: "#f6f5ef",
+                    borderRadius: "50%",
+                    width: 38,
+                    height: 38,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {a.icon}
+                </span>
+                <div>
+                  <div style={{ fontWeight: 600 }}>{a.title}</div>
+                  <div style={{ color: "#888", fontSize: 13 }}>{a.time}</div>
+                </div>
+              </div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: a.color,
+                  fontSize: 18,
+                  minWidth: 70,
+                  textAlign: "right",
+                }}
+              >
+                {a.amount}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
+
+function ActionButton({ icon, label, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: "#174c31",
+        color: "#fff",
+        border: "none",
+        borderRadius: "50%",
+        width: 120,
+        height: 120,
+        aspectRatio: "1 / 1",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 48,
+        boxShadow: "0 2px 8px #0002",
+        cursor: "pointer",
+        margin: 0,
+        padding: 0,
+        outline: "none",
+        overflow: "hidden",
+        flexShrink: 0,
+        flexGrow: 0,
+      }}
+      aria-label={label}
+    >
+      <img src={icon} alt={label} style={{ width: 48, height: 48, marginBottom: 4 }} />
+      <div style={{
+        fontSize: 16,
+        fontWeight: 500,
+        marginTop: 8,
+        color: "#fff",
+        lineHeight: 1.15,
+        textAlign: "center",
+        whiteSpace: "normal",
+        maxWidth: "90%",
+        padding: "0 4px",
+        wordBreak: "break-word"
+      }}>{label}</div>
+    </button>
+  );
+}
+
+export default HomeScreen;

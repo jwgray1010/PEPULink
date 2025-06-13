@@ -1,40 +1,44 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import homeIcon from "../assets/home.svg";
-import logo from "../assets/logo.png";
 
 export default function WhatIsPepu() {
-  const navigate = useNavigate();
-
   return (
-    <div style={{
-      maxWidth: 600,
-      margin: "40px auto",
-      background: "#23272f",
-      color: "#fff",
-      borderRadius: 16,
-      padding: 32,
-      boxShadow: "0 8px 32px #0008",
-      textAlign: "center"
-    }}>
-      <img src={logo} alt="PEPU Logo" style={{ width: 80, marginBottom: 16 }} />
-      <h1 style={{ color: "#ffd700" }}>What is PEPU?</h1>
-      <p>
-        <b>PEPU</b> is a decentralized payment token designed for fast, low-fee transactions on the PepeUnchained network.<br /><br />
-        Use PEPU to pay merchants, tip creators, and access exclusive features in the PEPULink ecosystem.<br /><br />
-        <span style={{ color: "#6aff6a" }}>Secure, instant, and community-powered.</span>
-      </p>
-      <p style={{ marginTop: 32, color: "#aaa" }}>
-        Learn more at <a href="https://pepeunchained.com" target="_blank" rel="noopener noreferrer" style={{ color: "#ffd700" }}>pepeunchained.com</a>
-      </p>
-      <img
-        src={homeIcon}
-        alt="Home"
-        aria-label="Go to Dashboard"
-        style={{ width: 40, height: 40, cursor: "pointer" }}
-        onClick={() => navigate("/")}
-        title="Go to Dashboard"
-      />
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        background: "linear-gradient(180deg, #2e8b57 0%, #f6f5ef 120%)",
+        color: "#23272f",
+        margin: 0,
+        padding: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+      }}
+    >
+      {/* Your What is PEPU content here */}
+      <div style={{
+        background: "#fff",
+        borderRadius: 20,
+        boxShadow: "0 4px 24px #0001",
+        margin: "48px auto 0 auto",
+        padding: "32px 24px",
+        maxWidth: 420,
+        width: "90%",
+        textAlign: "center"
+      }}>
+        <h1 style={{ color: "#2e8b57", fontWeight: 700 }}>What is PEPU?</h1>
+        <p style={{ fontSize: 18, marginTop: 18 }}>
+          PEPU is a fast, low-fee payment platform designed for modern digital finance. 
+          Instantly send, receive, and manage your money with ease, security, and transparency.
+        </p>
+        <ul style={{ textAlign: "left", margin: "24px auto 0 auto", maxWidth: 340, color: "#23272f" }}>
+          <li>⚡ Instant transactions</li>
+          <li>🔒 Secure and private</li>
+          <li>💸 Low fees</li>
+          <li>🌍 Global access</li>
+        </ul>
+      </div>
     </div>
   );
 }

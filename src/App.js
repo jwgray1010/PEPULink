@@ -141,11 +141,11 @@ function App() {
           <Route path="/qr" element={<QRScanner signer={signer} openModal={openModal} />} />
           <Route path="/merchant" element={<MerchantQRGenerator signer={signer} />} />
           <Route path="/tx" element={<TxHistory signer={signer} />} />
-          <Route path="/card" element={signer ? <CardScreen signer={signer} /> : <div>Please connect wallet</div>} />
+          <Route path="/card" element={<CardScreen signer={signer} />} />
           <Route path="/chart" element={<PEPULiveChart />} />
           <Route path="/about" element={<WhatIsPepu />} />
           <Route path="/send" element={<SendToMerchant />} />
-          <Route path="/rewards" element={<RewardsPage userAddress={signer?.address} />} />
+          <Route path="/rewards" element={<RewardsPage signer={signer} />} />
           <Route path="/ai" element={<SmartSpendingAI signer={signer} txHistory={txHistory} />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>

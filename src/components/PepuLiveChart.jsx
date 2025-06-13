@@ -10,24 +10,26 @@ export default function PepuLiveChart() {
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: "linear-gradient(135deg, #181c20 0%, #23272b 100%)",
-        padding: 0,
+        background: "linear-gradient(180deg, #2e8b57 0%, #f6f5ef 120%)",
+        color: "#23272f",
         margin: 0,
+        padding: 0,
         display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
       }}
     >
       <div
         style={{
-          background: "#23272b",
-          borderRadius: 24,
+          background: "#ffffff",
+          borderRadius: 32,
           boxShadow: "0 8px 32px #000a",
-          maxWidth: 480,
-          width: "100%",
+          maxWidth: 900, // increased from 480
+          width: "95vw",
           margin: "32px auto 0 auto",
           padding: "32px 24px 24px 24px",
-          color: "#fff",
+          color: "#23272f",
           textAlign: "center",
         }}
       >
@@ -58,7 +60,7 @@ export default function PepuLiveChart() {
               fontSize: "2.1em",
               fontWeight: 800,
               letterSpacing: "-1px",
-              color: "#ffd700",
+              color: "#2e8b57",
             }}
           >
             PEPU Live Price Chart
@@ -66,12 +68,13 @@ export default function PepuLiveChart() {
         </div>
         <iframe
           src="https://www.geckoterminal.com/eth/pools/0xb1b10b05aa043dd8d471d4da999782bc694993e3ecbe8e7319892b261b412ed5?embed=1"
-          height="420"
+          height="600" // increased from 420
           style={{
             width: "100%",
+            minHeight: 400,
             border: 0,
-            borderRadius: 16,
-            background: "#181c20",
+            borderRadius: 24,
+            background: "#f6f5ef",
             boxShadow: "0 2px 12px #0006",
           }}
           title="PEPU Live Chart"
@@ -90,7 +93,7 @@ export default function PepuLiveChart() {
             href="https://www.coingecko.com"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "#ffd700", textDecoration: "underline" }}
+            style={{ color: "#2e8b57", textDecoration: "underline" }}
           >
             CoinGecko
           </a>

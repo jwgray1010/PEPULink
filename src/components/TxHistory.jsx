@@ -11,6 +11,83 @@ function timeAgo(date) {
   return `${Math.floor(diff/86400)}d ago`;
 }
 
+const demoTxs = [
+  {
+    hash: "0xabc123...",
+    date: "2025-06-13",
+    type: "Payment",
+    amount: "-25.00 PEPU",
+    to: "0xMerchant1",
+    status: "Success"
+  },
+  {
+    hash: "0xdef456...",
+    date: "2025-06-12",
+    type: "Top Up",
+    amount: "+100.00 PEPU",
+    to: "Card",
+    status: "Success"
+  },
+  {
+    hash: "0xghi789...",
+    date: "2025-06-11",
+    type: "Reward",
+    amount: "+5.00 PEPU",
+    to: "You",
+    status: "Success"
+  }
+];
+
+const demoActivities = [
+  {
+    icon: "💰",
+    title: "Received Payment",
+    time: "10 mins ago",
+    amount: "+50.00 PEPU"
+  },
+  {
+    icon: "🔄",
+    title: "Swapped Tokens",
+    time: "30 mins ago",
+    amount: "-10.00 PEPU"
+  },
+  {
+    icon: "📈",
+    title: "Price Alert",
+    time: "1 hour ago",
+    amount: "+5.00 PEPU"
+  },
+  {
+    icon: "🎉",
+    title: "Milestone Reached",
+    time: "2 hours ago",
+    amount: "+100.00 PEPU"
+  },
+  {
+    icon: "⚡",
+    title: "Instant Transfer",
+    time: "3 hours ago",
+    amount: "-25.00 PEPU"
+  },
+  {
+    icon: "🔔",
+    title: "New Block Confirmed",
+    time: "5 hours ago",
+    amount: "0.00 PEPU"
+  }
+];
+
+// Example transaction data
+const transactions = [
+  { icon: "🏪", title: "BURGER PALACE", time: "Just now", amount: -8.5 },
+  { icon: "🏦", title: "BANK", time: "Today", amount: 125000 },
+  { icon: "☕️", title: "COFFEE SHOP", time: "Yesterday", amount: -4.5 },
+  { icon: "💸", title: "REQUEST FROM ALICE", time: "1 min ago", amount: 50 },
+  { icon: "💳", title: "CARD LOAD", time: "Today", amount: 100 },
+  { icon: "🍔", title: "FAST FOOD", time: "Yesterday", amount: -12 },
+  { icon: "🎁", title: "GIFT RECEIVED", time: "3 days ago", amount: 20 },
+];
+
 export default function TxHistory({ signer }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,17 +100,8 @@ export default function TxHistory({ signer }) {
   const perPage = 10;
 
   useEffect(() => {
-    setLoading(true);
-    fetch('/api/history')
-      .then(res => res.json())
-      .then(data => {
-        setHistory(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to load transaction history');
-        setLoading(false);
-      });
+    setHistory(demoTxs);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -42,15 +110,17 @@ export default function TxHistory({ signer }) {
 
   useEffect(() => {
     async function fetchTxs() {
-      if (!signer?.address) return;
+      if (!signer?.address) {
+        setHistory(demoTxs); // <--- Use demo data if no signer
+        return;
+      }
       try {
         const res = await fetch(`/api/tx-history?address=${signer.address}`);
         if (!res.ok) throw new Error("No tx history endpoint");
         const data = await res.json();
         setHistory(data);
       } catch {
-        // Fallback: set empty or mock data
-        setHistory([]);
+        setHistory(demoTxs); // <--- Use demo data on error
       }
     }
     fetchTxs();
@@ -66,7 +136,19 @@ export default function TxHistory({ signer }) {
 
   if (loading) {
     return (
-      <div className="tx-history loading">
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          minHeight: "100vh",
+          background: "#181c20",
+          color: "#fff",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -96,122 +178,92 @@ export default function TxHistory({ signer }) {
   if (error) return <div className="tx-history error">{error}</div>;
 
   return (
-    <div className="tx-history">
-      <div style={{
+    <div
+      style={{
+        width: "100vw",
+        minHeight: "100vh",
+        background: "linear-gradient(180deg, #2e8b57 0%, #f6f5ef 120%)",
+        color: "#23272f",
+        margin: 0,
+        padding: 0,
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        padding: 18,
-        gap: 12
-      }}>
-        <img
-          src={homeIcon}
-          alt="Home"
-          aria-label="Go to Dashboard"
-          style={{ width: 40, height: 40, cursor: "pointer" }}
-          onClick={() => navigate("/")}
-          title="Go to Dashboard"
-        />
-        <h2 style={{ margin: 0 }}>Transaction History</h2>
-      </div>
-      <input
-        type="text"
-        placeholder="Filter by type, hash, or amount"
-        value={filter}
-        onChange={e => setFilter(e.target.value)}
-        style={{ marginBottom: 12, width: '100%', padding: '0.5em', borderRadius: 6, border: '1px solid #2e8b57' }}
-      />
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {pagedHistory.length === 0 && <li>No transactions yet.</li>}
-        {pagedHistory.map((tx, i) => (
-          <li
-            key={tx.hash || i}
-            className="history-item"
-            tabIndex={0}
-            aria-label={`Transaction on ${tx.date}: ${tx.type} ${tx.amount}`}
-            style={{
-              margin: '0.5em 0',
-              padding: '0.75em 1em',
-              borderRadius: '8px',
-              background: tx.type === 'topup' ? '#2e8b57' : '#23272f',
-              color: '#fff',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'background 0.2s'
-            }}
-          >
-            <span>
-              {timeAgo(tx.date)}:{' '}
-              <b style={{ textTransform: 'capitalize' }}>{tx.type}</b>{' '}
-              <span style={{
-                color: tx.amount > 0 ? '#b6ffb6' : '#ffb6b6',
-                fontWeight: 600,
-                marginRight: 8
-              }}>
-                {tx.amount > 0 ? '⬇️' : '⬆️'}
-                {tx.amount > 0 ? '+' : ''}
-                {tx.amount}
-              </span>
-            </span>
-            {tx.hash && (
-              <span
-                title="Copy transaction hash"
-                style={{ cursor: 'pointer', color: '#ffd700', marginLeft: 12, fontSize: '0.95em', position: 'relative' }}
-                tabIndex={0}
-                onClick={() => {
-                  navigator.clipboard.writeText(tx.hash);
-                  setCopiedIdx(i);
-                  setTimeout(() => setCopiedIdx(null), 1200);
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    navigator.clipboard.writeText(tx.hash);
-                    setCopiedIdx(i);
-                    setTimeout(() => setCopiedIdx(null), 1200);
-                  }
-                }}
-                aria-label="Copy transaction hash"
-              >
-                <a
-                  href={`https://etherscan.io/tx/${tx.hash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#ffd700', textDecoration: 'underline' }}
-                  tabIndex={-1}
+      }}
+    >
+      <div
+        style={{
+          background: "#174c31",
+          borderRadius: 28,
+          boxShadow: "0 4px 16px #0002",
+          margin: "48px auto 0 auto",
+          maxWidth: 420,
+          width: "90vw",
+          padding: "28px 18px 18px 18px",
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 900,
+            fontSize: 28,
+            marginBottom: 18,
+            color: "#fff",
+            textAlign: "center",
+            letterSpacing: 1,
+          }}
+        >
+          Transaction History
+        </div>
+        <div>
+          {transactions.map((a, i) => (
+            <div
+              key={i}
+              style={{
+                background: "#181c20",
+                borderRadius: 14,
+                boxShadow: "0 2px 8px #0006",
+                padding: "16px 18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 16,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span
+                  style={{
+                    fontSize: 26,
+                    background: "#23272f",
+                    borderRadius: "50%",
+                    width: 38,
+                    height: 38,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  View
-                </a>
-                <span style={{ marginLeft: 4, fontSize: '1.1em' }}>📋</span>
-                {copiedIdx === i && (
-                  <span style={{
-                    position: 'absolute',
-                    top: -24,
-                    left: 0,
-                    background: '#23272f',
-                    color: '#ffd700',
-                    padding: '2px 8px',
-                    borderRadius: 6,
-                    fontSize: '0.9em'
-                  }}>Copied!</span>
-                )}
-              </span>
-            )}
-            {tx.status && (
-              <span style={{
-                marginLeft: 8,
-                color: tx.status === 'confirmed' ? '#b6ffb6' : '#ffd700',
-                fontWeight: 500
-              }}>
-                {tx.status}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-      <div style={{ textAlign: 'center', marginTop: 12 }}>
-        <button disabled={page === 1} onClick={() => setPage(p => p-1)}>Prev</button>
-        <span style={{ margin: '0 1em' }}>Page {page}</span>
-        <button disabled={page*perPage >= filteredHistory.length} onClick={() => setPage(p => p+1)}>Next</button>
+                  {a.icon}
+                </span>
+                <div>
+                  <div style={{ fontWeight: 600, color: "#fff" }}>{a.title}</div>
+                  <div style={{ color: "#aaa", fontSize: 13 }}>{a.time}</div>
+                </div>
+              </div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: a.amount > 0 ? "#00e676" : "#ff4d4f",
+                  fontSize: 20,
+                  minWidth: 80,
+                  textAlign: "right",
+                }}
+              >
+                {a.amount > 0 ? "+" : ""}
+                ${Math.abs(a.amount).toLocaleString()}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

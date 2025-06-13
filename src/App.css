@@ -1,4 +1,8 @@
-#root {
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+html, body {
   width: 100vw;
   min-height: 100vh;
   margin: 0;
@@ -43,20 +47,6 @@ body {
     animation: logo-spin infinite 20s linear;
   }
 }
-
-.card, .main-container, .qr-section {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px #0001;
-  padding: 2em;
-  margin: 2em auto;
-  max-width: 420px;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
 .wallet-address-btn:focus, .wallet-dropdown:focus {
   outline: 2px solid #ffd700;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import QrReader from 'react-qr-reader';
+import QrScanner from 'react-qr-scanner';
 import { ethers } from "ethers";
 import allowlist from "../allowlist.json";
 import { toast } from 'react-toastify';
@@ -79,74 +79,114 @@ function QRScanner(props) {
     <div
       className="qr-scanner"
       style={{
-        minHeight: "100vh",
         width: "100vw",
-        background: "#181c20",
-        color: "#fff",
-        fontFamily: "inherit",
+        height: "100vh",
+        color: "#23272f",
         margin: 0,
         padding: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        background: "none", // or remove this line entirely
       }}
     >
-      {/* Logo as Home button */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        padding: 18,
-        gap: 12
-      }}>
-        <img
-          src={homeIcon}
-          alt="Home"
-          aria-label="Go to Dashboard"
-          style={{ width: 40, height: 40, cursor: "pointer" }}
-          onClick={() => navigate("/")}
-          title="Go to Dashboard"
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") navigate("/");
-          }}
-        />
-        <h2 style={{ margin: 0 }}>Scan QR Code</h2>
+      {/* Header */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "99vw",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: 32,
+          paddingBottom: 20,
+          zIndex: 2,
+          background: "rgba(24,28,32,0.85)",
+          boxSizing: "border-box",
+        }}
+      >
+        <h2 style={{ margin: 0, fontSize: "2.5em", color: "#fff", textAlign: "center", width: "100%" }}>
+          Scan QR Code
+        </h2>
       </div>
-      {!scanResult && (
-        <QrReader
-          onResult={(result, error) => {
-            if (!!result) handleScan(result?.text);
-          }}
-          constraints={{ facingMode: 'environment' }}
-          style={{ width: '100%' }}
-        />
-      )}
-      {scanResult && (
-        <div style={{ margin: '1em 0' }}>
-          <p>
-            Scanned:{' '}
-            <span
-              style={{
-                background: '#23272f',
-                padding: '0.2em 0.5em',
-                borderRadius: 6,
-                userSelect: 'all',
-                cursor: 'pointer',
-              }}
-              title="Copy"
-              onClick={() => {
-                navigator.clipboard.writeText(scanResult);
-                toast.success("QR payload copied!");
-              }}
-              tabIndex={0}
-              aria-label="Copy scanned result"
-            >
-              {scanResult}
-            </span>
-          </p>
-          <button onClick={handleRescan} style={{ marginTop: 8 }}>
-            Rescan
-          </button>
-        </div>
-      )}
+      {/* Scanner */}
+      <div
+        style={{
+          flex: 1,
+          width: "100vw",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+        }}
+      >
+        {!scanResult && (
+          <div
+            style={{
+              width: 340,
+              height: 340,
+              background: "#23272f",
+              borderRadius: 18,
+              boxShadow: "0 2px 16px #0008",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            <QrScanner
+              delay={300}
+              onError={(err) => setError(err.message)}
+              onScan={(result) => result && handleScan(result?.text)}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        )}
+        {/* Scan result and actions */}
+        {scanResult && (
+          <div style={{
+            margin: '1em 0',
+            width: "90vw",
+            maxWidth: 420,
+            background: "#23272f",
+            borderRadius: 16,
+            padding: 24,
+            boxShadow: "0 2px 16px #0001",
+            zIndex: 2
+          }}>
+            <p>
+              Scanned:{' '}
+              <span
+                style={{
+                  background: '#181c20',
+                  padding: '0.2em 0.5em',
+                  borderRadius: 6,
+                  userSelect: 'all',
+                  cursor: 'pointer',
+                }}
+                title="Copy"
+                onClick={() => {
+                  navigator.clipboard.writeText(scanResult);
+                  toast.success("QR payload copied!");
+                }}
+                tabIndex={0}
+                aria-label="Copy scanned result"
+              >
+                {scanResult}
+              </span>
+            </p>
+            <button onClick={handleRescan} style={{ marginTop: 8 }}>
+              Rescan
+            </button>
+          </div>
+        )}
+      </div>
+      {/* Transaction status and modals */}
       {txStatus && (
         <p
           style={{
@@ -157,6 +197,8 @@ function QRScanner(props) {
                 ? '#b6ffb6'
                 : '#ff4d4f',
             fontWeight: 600,
+            fontSize: "1.1em",
+            textAlign: "center"
           }}
         >
           Transaction Status: {txStatus}
@@ -168,7 +210,7 @@ function QRScanner(props) {
         </p>
       )}
       {txHash && (
-        <p>
+        <p style={{ textAlign: "center" }}>
           Tx Hash:{' '}
           <a
             href={`https://etherscan.io/tx/${txHash}`}

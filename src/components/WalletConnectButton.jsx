@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ethers } from "ethers";
-import Web3Modal from "web3modal";
 import Jazzicon from "react-jazzicon";
 import toast from "react-hot-toast";
-
-const providerOptions = {};
-const web3Modal = new Web3Modal({
-  cacheProvider: true,
-  providerOptions,
-});
 
 export default function WalletConnectButton({ setSigner }) {
   const [account, setAccount] = useState(null);
@@ -29,14 +22,6 @@ export default function WalletConnectButton({ setSigner }) {
     }
   }, [account]);
 
-  // Auto-reconnect on mount if provider cached
-  useEffect(() => {
-    if (web3Modal.cachedProvider && !connecting && !account) {
-      connectWallet();
-    }
-    // eslint-disable-next-line
-  }, []);
-
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -54,13 +39,19 @@ export default function WalletConnectButton({ setSigner }) {
   const connectWallet = async () => {
     setConnecting(true);
     try {
-      const connection = await web3Modal.connect();
-      const provider = new ethers.BrowserProvider(connection);
+      console.log("window.ethereum:", window.ethereum); // Add this
+      if (!window.ethereum) {
+        toast.error("MetaMask not detected!");
+        setConnecting(false);
+        return;
+      }
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
       setAccount(address);
       setSigner(signer);
-      localStorage.setItem("walletProvider", web3Modal.cachedProvider);
+      toast.success("Wallet connected!");
     } catch (err) {
       toast.error("Wallet connection failed");
     }
@@ -70,7 +61,6 @@ export default function WalletConnectButton({ setSigner }) {
   const disconnectWallet = () => {
     setAccount(null);
     setSigner(null);
-    web3Modal.clearCachedProvider();
     setDropdownOpen(false);
   };
 
@@ -78,7 +68,7 @@ export default function WalletConnectButton({ setSigner }) {
     if (!account) return;
     navigator.clipboard.writeText(account);
     toast.success("Wallet address copied!");
-    setDropdownOpen(false); // Close dropdown after copying
+    setDropdownOpen(false);
   };
 
   return (
@@ -155,7 +145,7 @@ export default function WalletConnectButton({ setSigner }) {
                 role="button"
                 aria-label="Copy Address"
               >
-              Copy Address
+                Copy Address
               </div>
               <div
                 style={{
@@ -171,7 +161,7 @@ export default function WalletConnectButton({ setSigner }) {
                 role="button"
                 aria-label="Logout"
               >
-              Logout
+                Logout
               </div>
             </div>
           )}
